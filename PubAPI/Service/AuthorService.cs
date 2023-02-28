@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using PubAPI.Model;
 using PublisherData;
 using PublisherDomain;
 
@@ -58,6 +59,14 @@ namespace PubAPI.Service
             {
                 return false;
             }
+            return (res > 0) ? true : false;
+        }
+
+        public async Task<bool> AddMultipleAuthors(List<AuthorModel> authorsModel)
+        {
+            var autorList = _mapper.Map<List<Author>>(authorsModel);
+            await _context.Author.AddRangeAsync(autorList);
+            var res = await _context.SaveChangesAsync();
             return (res > 0) ? true : false;
         }
 

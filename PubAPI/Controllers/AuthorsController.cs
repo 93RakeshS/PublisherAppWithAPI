@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PublisherData;
+﻿using Microsoft.AspNetCore.Mvc;
 using PublisherDomain;
 using PubAPI.Service;
+using PubAPI.Model;
 
 namespace PubAPI.Controllers
 {
@@ -23,15 +17,15 @@ namespace PubAPI.Controllers
         }
 
         // GET: api/Authors
-        [HttpGet]
+        [HttpGet("GetAllAuthors")]
         public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {
             var authors = await _service.GetAllAuthors();
             return Ok(authors);
         }
 
-        // GET: api/Authors/5
-        [HttpGet("{id}")]
+        // GET: api/Author/5
+        [HttpGet("GetAuthor/{id}")]
         public async Task<ActionResult<AuthorModel>> GetAuthor(int id)
         {
             var authorModel = await _service.GetAuthorById(id);
@@ -47,10 +41,10 @@ namespace PubAPI.Controllers
      
         //// PUT: api/Authors/5
         //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuthor(int id, AuthorModel authorModel)
+        [HttpPut("UpdateAuthor/{id}")]
+        public async Task<IActionResult> UpdateAuthor(int id, AuthorModel authorModel)
         {
-            if (id != authorModel.AuthorId)
+            if (id != authorModel.Id)
             {
                 return BadRequest();
             }
@@ -60,20 +54,27 @@ namespace PubAPI.Controllers
 
         //// POST: api/Authors
         //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<IActionResult> PostAuthor(AuthorModel authorModel)
+        [HttpPost("AddAuthor")]
+        public async Task<IActionResult> AddAuthor(AuthorModel authorModel)
         {
             var res = await _service.AddAuthor(authorModel);
             return Ok(res);
         }
 
         //// DELETE: api/Authors/5
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteAuthor/{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
            var res = await _service.DeleteAuthorById(id);
            return Ok(res);
            
+        }
+
+        [HttpPost("AddMultipleAuthor")]
+        public async Task<IActionResult> AddMultipleAuthor(List<AuthorModel> authorModels)
+        {
+            var res = await _service.AddMultipleAuthors(authorModels); 
+            return Ok(res);
         }
 
         //private bool AuthorExists(int id)
