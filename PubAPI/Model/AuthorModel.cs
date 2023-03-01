@@ -5,10 +5,10 @@ namespace PubAPI.Model
     public class AuthorModel
     {
         public int Id { get; set; }
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string FirstName { get; set; }
 
-        [Required(AllowEmptyStrings =true)]
+        [MinLength(1,ErrorMessage ="Last Name can not be empty")]
         public string LastName { get; set; }
     }
 }
