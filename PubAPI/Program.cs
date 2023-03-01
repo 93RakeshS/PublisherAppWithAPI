@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using PubAPI.Repository;
+using PubAPI.Service;
 using PublisherData;
 using System.Text.Json.Serialization;
 using WebAPI.Middleware;
@@ -10,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
     .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
     {
@@ -44,7 +46,15 @@ builder.Services.AddDbContext<PubContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("PubConnection"))
     .EnableSensitiveDataLogging()
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-builder.Services.AddScoped<PubAPI.Service.AuthorService>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{ 
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddScoped<AuthorRepository>();
+builder.Services.AddScoped<AuthorService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

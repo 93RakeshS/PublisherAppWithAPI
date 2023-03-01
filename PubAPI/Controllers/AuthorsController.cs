@@ -16,70 +16,133 @@ namespace PubAPI.Controllers
             _service = service;
         }
 
-        // GET: api/Authors
         [HttpGet("GetAllAuthors")]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        public async Task<ActionResult<IEnumerable<AuthorModel>>> GetAuthors()
         {
-            var authors = await _service.GetAllAuthors();
-            return Ok(authors);
+            try
+            {
+                var authors = await _service.GetAllAuthors();
+                return Ok(authors);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+                
         }
 
-        // GET: api/Author/5
         [HttpGet("GetAuthor/{id}")]
         public async Task<ActionResult<AuthorModel>> GetAuthor(int id)
         {
-            var authorModel = await _service.GetAuthorById(id);
-
-            if (authorModel == null)
+            try
             {
-                return NotFound();
-            }
+                var authorModel = await _service.GetAuthorById(id);
 
-            return authorModel;
+                if (authorModel == null)
+                {
+                    return NotFound();
+                }
+
+                return authorModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-     
-        //// PUT: api/Authors/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("UpdateAuthor/{id}")]
-        public async Task<IActionResult> UpdateAuthor(int id, AuthorModel authorModel)
+        public async Task<ActionResult<AuthorModel>> UpdateAuthor(int id, AuthorModel authorModel)
         {
-            if (id != authorModel.Id)
+            try
             {
-                return BadRequest();
+                if (ModelState.IsValid)
+                {
+                    if (id != authorModel.Id)
+                    {
+                        return BadRequest();
+                    }
+                    var author = await _service.UpdateAuthor(id, authorModel);
+                    if (author != null)
+                    {
+                        return author;
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
             }
-            var res = await _service.UpdateAuthor(id, authorModel);
-            return Ok(res);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-        //// POST: api/Authors
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("AddAuthor")]
         public async Task<IActionResult> AddAuthor(AuthorModel authorModel)
         {
-            var res = await _service.AddAuthor(authorModel);
-            return Ok(res);
+            try
+            {
+                if (ModelState.IsValid) 
+                {
+                    var res = await _service.AddAuthor(authorModel);
+                    return Ok(res);
+                }   
+                else
+                { 
+                    return BadRequest(ModelState); 
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-        //// DELETE: api/Authors/5
         [HttpDelete("DeleteAuthor/{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
-           var res = await _service.DeleteAuthorById(id);
-           return Ok(res);
-           
+            try
+            {
+                var res = await _service.DeleteAuthorById(id);
+                return (res==true)?Ok("Author Deleted"):NotFound("Author Not Found");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("AddMultipleAuthor")]
-        public async Task<IActionResult> AddMultipleAuthor(List<AuthorModel> authorModels)
+        public async Task<ActionResult<IEnumerable<AuthorModel>>> AddMultipleAuthor(IEnumerable<AuthorModel> authorModels)
         {
-            var res = await _service.AddMultipleAuthors(authorModels); 
-            return Ok(res);
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var res = await _service.AddMultipleAuthors(authorModels);
+                    return Ok(res);
+                }
+                else
+                { 
+                    return BadRequest(ModelState); 
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
-
-        //private bool AuthorExists(int id)
-        //{
-        //    return _context.Author.Any(e => e.AuthorId == id);
-        //}
     }
 }
