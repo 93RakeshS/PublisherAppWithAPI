@@ -1,4 +1,4 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PubAPI.Model
 {
@@ -7,7 +7,8 @@ namespace PubAPI.Model
         public int Id { get; set; }
         [Required]
         public string FirstName { get; set; }
-        [Required]
+
+        [Required(AllowEmptyStrings =true)]
         public string LastName { get; set; }
     }
 }
